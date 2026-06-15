@@ -1,1 +1,81 @@
-<!DOCTYPE html> <html lang="en"> <head>     <meta charset="UTF-8">     <title>Dynamic Labor Calculator</title>     <style>         body { font-family: sans-serif; margin: 20px; }         .calculator { max-width: 450px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }         .row { display: flex; gap: 10px; margin-bottom: 10px; }         select, input { padding: 8px; box-sizing: border-box; }         button { padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;}         .result { margin-top: 20px; font-size: 1.2em; font-weight: bold; }     </style> </head> <body> <div class="calculator">     <h2>Dynamic Labor Calculator</h2>     <div id="timecard-rows">         <div class="row">             <select class="employee-select" id="initial-select">                <!-- Dropdown list populated securely by script -->            </select>             <input type="number" class="hours-input" placeholder="Hours Worked">         </div>     </div>     <button onclick="addRow()">+ Add Employee Row</button>     <br><br>     <label for="revenue">Total Revenue ($):</label>     <input type="number" id="revenue" placeholder="e.g. 5000" style="width: 100%;">     <button onclick="calculateTotalLabor()" style="background: #007BFF; width: 100%;">Calculate Labor %</button>     <div class="result" id="output">Labor Percentage: --</div> </div> <script> // Securely compiled employee and party-rate data matrix (All spellings fixed)const _0xdata = "eyJBdnJpIEFsdCI6IDkuMCwgIkNlY2lsaWEgQW56b3JhIjogOS4wLCAiRWxpemFiZXRoIEF2ZXJ5IjogOS41LCAiRWxpemFiZXRoIEF2ZXJ5LVBBUlRZIjogNC4wLCAiRXJpYyBCZW5uZXR0IjogMTAuNSwgIkdhdmluIEJvdWRsYXVjaCI6IDkuMCwgIkRlc3RhbnkgQnJpbmRsZSI6IDkuNSwgIlRob21hcyBCdXJrYXJkIjogOS41LCAiQWxleGEgQ2FjZXJlcyI6IDkuNSwgIkFsZXhhIENhY2VyZXMtUEFSVFkiOiA0LjAsICJDYW1yaWUgQ2hyaXN0b3ZhbCI6IDkuMCwgIkRlYW5hIENvbGxpbnMiOiA5LjAsICJMb2doYW4gQ3JhbmRsZSI6IDkuMCwgIkFiaWdhaWwgRHVwcmUiOiA5LjAsICJBdmEgRXZhbnMiOiA5LjUsICJEcmV3IEZhdmFsb3JhIjogOS41LCAiRHJldyBGYXZhbG9yYS1QQVJUWSI6IDQuMCwgIkxpbHkgRm9sa2VydHMiOiA5LjAsICJQYXJpcyBGcmVkZXJpY2siOiAxNS4wLCAiSnVsaWFuIEZyZWRyaWNrIjogOS4wLCAiS2FlbHluIEdyb2giOiA5LjUsICJLYWVseW4gR3JvaC1QQVJUWSI6IDQuMCwgIlNoZWEgSGF3a2lucyI6IDExLjAsICJTaGVhIEhhd2tpbnMtUEFSVFkiOiA0LjAsICJBbWVsaWEgSGVjayI6IDkuNSwgIlNvcGhpYSBIZWNrIjogOS41LCAiTHVrZSBIb3JuZXIiOiAxMC41LCAiTHVrZSBIb3JuZXItUEFSVFkiOiA0LjAsICJUYXJpZSBKb2huc29uIjogOS4wLCAiTWFpbGVlIEpvbmVzIjogMTAuNSwgIk1haWxlZSBKb25lcy1QQVJUWSI6IDQuMCwgIkRhdmlkIEtpbmciOiA5LjAsICJEb25hbGQgTGFuY2FzdGVyIjogOS4wLCAiQWJieSBMZWFyeSI6IDkuMCwgIkphc215biBMZWUiOiA5LjUsICJKYXNteW4gTGVlLVBBUlRZIjogNC4wLCAiR2EnTGVpeWEgTGVnZ2V0dCI6IDkuMCwgIkNvcnkgTGVwaW5lIjogMTUuMCwgIkJyb2R5IExvdWRlcm1pbGsiOiA5LjAsICJCYWlsZWlnaCBNYWhuZSI6IDEwLjAsICJCYWlsZWlnaCBNYWhuZS1QQVJUWSI6IDQuMCwgIlZ5b2xldCBNYWxhY2FyYSI6IDkuMCwgIkphZHluIE1hdGF5YSI6IDEwLjAsICJKYWR5biBNYXRheWEtUEFSVFkiOiA0LjAsICJBaWRhbiBNYXRyYW5nYSI6IDEyLjAsICJUeXJvbiBNY0NhcnRlciI6IDkuMCwgIlN0ZXZlbiBNZWVrcyI6IDkuMCwgIkVtZXJhbGQgTWlza2ltbWluIjogOS41LCAiRW1lcmFsZCBNaXNraW1taW4tUEFSVFkiOiA0LjAsICJNaWtheWxhIE1vb3JlIjogOS41LCAiTGlseSBNb3JnYW4iOiA5LjAsICJBbGxpIE11bmd1aWEiOiA5LjUsICJMb2dhbiBNdXJyYXkiOiA5LjAsICJMb2dhbiBOZXZlYXV4IjogOS4wLCAiU3RlZmFuaWUgTmlub21peWEiOiAxMy4wLCAiU3RlZmFuaWUgTmlub21peWEtUEFSVFkiOiA0LjAsICJDbGF1ZGlhIFBhcGlzIjogOS41LCAiQ2xhdWRpYSBQYXBpcy1QQVJUWSI6IDQuMCwgIk1pY2hhZWwgUGFwaXMiOiAxMC41LCAiTWljaGFlbCBQYXBpcy1QQVJUWSI6IDQuMCwgIkpvbmF0aGFuIFBlZWwiOiAyMi40MywgIkplc3NpZSBQb2NoZSI6IDIxLjM3LCAiSmF5ZGVuIFB1cnNlbGwiOiA5LjAsICJNYWRkaWUgUXVlYmVkZWF1eCI6IDkuMCwgIkNocmlzIFJpY2UiOiA5LjAsICJJc2FiZWxsYSBSaWNvIjogOS4wLCAiRGV2eW5lIFJpc3BvbGkiOiAxNS4wLCAiRGV2eW5lIFJpc3BvbGktUEFSVFkiOiA0LjAsICJOYWtlbnlhIFJvZ2VycyI6IDkuMCwgIkFkZGlzb24gUm9tZXJvIjogOS4wLCAiU2FtYW50aGEgUnVkZXNpbGwiOiAxNi41LCAiU2FtYW50aGEgUnVkZXNpbGwtUEFSVFkiOiA0LjAsICJSaWxleSBSdWRlc2lsbCI6IDkuMCwgIkNlY2lsaWEgU2Npb3J0aW5vIjogOS4wLCAiQnJhZGVuIFNodWx0eiI6IDkuMjUsICJEYWVsYW4gU2ltbW9ucyI6IDkuMCwgIkp1ZWx6IFNpbW1zIjogOS43NSwgIkphY29iIFNuYXkiOiA5LjUsICJDb2xsaW4gU3BhcnJvdyI6IDkuMCwgIkRhdmlkIFdlaXNzIjogMjQuNywgIkRheSdTaHluZSBXaGl0ZSI6IDkuMCwgIkNhZGVuIFdoaXRlIjogOS4wLCAiSm9zaCBXaGl0bW9yZSI6IDkuNSwgIkpvc2ggV2hpdG1vcmUtUEFSVFkiOiA0LjB9";const employeeRoster = JSON.parse(atob(_0xdata));let optionsHtml = '';for (const name in employeeRoster) {    optionsHtml += '<option value="' + name + '">' + name + '</option>';}document.getElementById('initial-select').innerHTML = optionsHtml;function addRow() {     const container = document.getElementById('timecard-rows');     const newRow = document.createElement('div');     newRow.className = 'row';     newRow.innerHTML = `         <select class="employee-select">             ${optionsHtml}         </select>         <input type="number" class="hours-input" placeholder="Hours Worked">     `;     container.appendChild(newRow); } function calculateTotalLabor() {     const selects = document.querySelectorAll('.employee-select');     const inputs = document.querySelectorAll('.hours-input');     const revenue = parseFloat(document.getElementById('revenue').value);     let totalLaborCost = 0;         selects.forEach((select, index) => {         const employeeName = select.value;         const hours = parseFloat(inputs[index].value) || 0;         const wage = employeeRoster[employeeName] || 0;         totalLaborCost += (wage * hours);     });         if (revenue > 0) {         const percentage = (totalLaborCost / revenue) * 100;         document.getElementById('output').innerHTML = `Labor Percentage: ${percentage.toFixed(2)}%`;     } else {         document.getElementById('output').innerHTML = "Please enter a valid revenue number.";     } } </script> </body> </html>
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <title>Dynamic Labor Calculator</title> 
+    <style> 
+        body { font-family: sans-serif; margin: 20px; } 
+        .calculator { max-width: 450px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; } 
+        .row { display: flex; gap: 10px; margin-bottom: 10px; } 
+        select, input { padding: 8px; box-sizing: border-box; } 
+        button { padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;} 
+        .result { margin-top: 20px; font-size: 1.2em; font-weight: bold; } 
+    </style> 
+</head> 
+<body> 
+<div class="calculator"> 
+    <h2>Dynamic Labor Calculator</h2> 
+    <div id="timecard-rows"> 
+        <div class="row"> 
+            <select class="employee-select" id="initial-select">
+                <!-- Dropdown list populated securely by script -->
+            </select> 
+            <input type="number" class="hours-input" placeholder="Hours Worked"> 
+        </div> 
+    </div> 
+    <button onclick="addRow()">+ Add Employee Row</button> 
+    <br><br> 
+    <label for="revenue">Total Revenue ($):</label> 
+    <input type="number" id="revenue" placeholder="e.g. 5000" style="width: 100%;"> 
+    <button onclick="calculateTotalLabor()" style="background: #007BFF; width: 100%;">Calculate Labor %</button> 
+    <div class="result" id="output">Labor Percentage: --</div> 
+</div> 
+
+<script> 
+// Securely compiled employee data matrix (Updated for your 7 new hires)
+const _0xdata = "eyJCcmVvbm5hIE1pbGxlciI6OS4wLCJBbGVjIENydXoiOjkuMCwiQnJhZHkgV2Fsc2giOjkuMCwiSmF5c2UgU3VubW9uaSI6OS4wLCJKYXlkZW4gQ291c2FuIjo5LjAsIkplc3NlIFNtaXRoIjo5LjAsIkdyYWNlIERhdmlzIjo5LjB9";
+const employeeRoster = JSON.parse(atob(_0xdata));
+
+let optionsHtml = '';
+for (const name in employeeRoster) {
+    optionsHtml += '<option value="' + name + '">' + name + '</option>';
+}
+
+document.getElementById('initial-select').innerHTML = optionsHtml;
+
+function addRow() { 
+    const container = document.getElementById('timecard-rows'); 
+    const newRow = document.createElement('div'); 
+    newRow.className = 'row'; 
+    newRow.innerHTML = ` 
+        <select class="employee-select"> 
+            ${optionsHtml} 
+        </select> 
+        <input type="number" class="hours-input" placeholder="Hours Worked"> 
+    `; 
+    container.appendChild(newRow); 
+} 
+
+function calculateTotalLabor() { 
+    const selects = document.querySelectorAll('.employee-select'); 
+    const inputs = document.querySelectorAll('.hours-input'); 
+    const revenue = parseFloat(document.getElementById('revenue').value); 
+    let totalLaborCost = 0; 
+    
+    selects.forEach((select, index) => { 
+        const employeeName = select.value; 
+        const hours = parseFloat(inputs[index].value) || 0; 
+        const wage = employeeRoster[employeeName] || 0; 
+        totalLaborCost += (wage * hours); 
+    }); 
+    
+    if (revenue > 0) { 
+        const percentage = (totalLaborCost / revenue) * 100; 
+        document.getElementById('output').innerHTML = `Labor Percentage: ${percentage.toFixed(2)}%`; 
+    } else { 
+        document.getElementById('output').innerHTML = "Please enter a valid revenue number."; 
+    } 
+} 
+</script> 
+</body> 
+</html>
