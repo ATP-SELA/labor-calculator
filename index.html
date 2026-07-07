@@ -18,7 +18,7 @@
     <div id="timecard-rows"> 
         <div class="row"> 
             <select class="employee-select" id="initial-select">
-                <!-- Dropdown list populated securely by script -->
+                <!-- Dropdown list populated by script -->
             </select> 
             <input type="number" class="hours-input" placeholder="Hours Worked"> 
         </div> 
@@ -30,12 +30,103 @@
     <button onclick="calculateTotalLabor()" style="background: #007BFF; width: 100%;">Calculate Labor %</button> 
     <div class="result" id="output">Labor Percentage: --</div> 
 </div> 
-
 <script> 
-// Securely compiled roster: Sorted Alphabetically by Last Name with Verified Spellings
-const _0xdata = "eyJBdnJpIEFsdCI6IDkuMCwgIkNlY2lsaWEgQW56b3JhIjogOS4wLCAiRWxpemFiZXRoIEF2ZXJ5IjogOS41LCAiRWxpemFiZXRoIEF2ZXJ5LVBBUlRZIjogNC4wLCAiRXJpYyBCZW5uZXR0IjogMTAuNSwgIkdhdmluIEJvdWRsYXVjaCI6IDkuMCwgIkRlI3RhbnkgQnJpbmRsZSI6IDkuNSwgIlRob21hcyBCdXJrYXJkIjogOS41LCAiQWxleGEgQ2FjZXJlcyI6IDkuNSwgIkFsZXhhIENhY2VyZXMtUEFSVFkiOiA0LjAsICJDYW1yaWUgQ2hyaXN0b3ZhbCI6IDkuMCwgIkRlYW5hIENvbGxpbnMiOiA5LjAsICJKYXlkZW4gQ291c2FuIjogOS4wLCAiTG9naGFuIENyYW5kbGUiOiA5LjAsICJBbGVjIENydXoiOiA5LjAsICJHcmFjZSBEYXZpcyI6IDkuMCwgIkFiaWdhaWwgRHVwcmUiOiA5LjAsICJBdmEgRXZhbnMiOiA5LjUsICJEcmV3IEZhdmFsb3JhIjogOS41LCAiRHJldyBGYXZhbG9yYS1QQVJUWSI6IDQuMCwgIkxpbHkgRm9sa2VydHMiOiA5LjAsICJQYXJpcyBGcmVkZXJpY2siOiAxNS4wLCAiSnVsaWFuIEZyZWRyaWNrIjogOS4wLCAiS2FlbHluIEdyb2giOiA5LjUsICJLYWVseW4gR3JvaC1QQVJUWSI6IDQuMCwgIlNoZWEgSGF3a2lucyI6IDExLjAsICJTaGVhIEhhd2tpbnMtUEFSVFkiOiA0LjAsICJBbWVsaWEgSGVjayI6IDkuNSwgIlNvcGhpYSBIZWNrIjogOS41LCAiTHVrZSBIb3JuZXIiOiAxMC41LCAiTHVrZSBIb3JuZXItUEFSVFkiOiA0LjAsICJCb2IgSm9obnNvbiI6IDE4LjAsICJUYXJpZSBKb2huc29uIjogOS4wLCAiTWFpbGVlIEpvbmVzIjogMTAuNSwgIk1haWxlZSBKb25lcy1QQVJUWSI6IDQuMCwgIkRhdmlkIEtpbmciOiA5LjAsICJEb25hbGQgTGFuY2FzdGVyIjogOS4wLCAiQWJieSBMZWFyeSI6IDkuMCwgIkphc215biBMZWUiOiA5LjUsICJKYXNteW4gTGVlLVBBUlRZIjogNC4wLCAiR2EnTGVpeWEgTGVnZ2V0dCI6IDkuMCwgIkNvcnkgTGVwaW5lIjogMTUuMCwgIkJyb2R5IExvdWRlcm1pbGsiOiA5LjAsICJCYWlsZWlnaCBNYWhuZSI6IDEwLjAsICJCYWlsZWlnaCBNYWhuZS1QQVJUWSI6IDQuMCwgIlY5b2xldCBNYWxhY2FyYSI6IDkuMCwgIkphZHluIE1hdGF5YSI6IDEwLjAsICJKYWR5biBNYXRheWEtUEFSVFkiOiA0LjAsICJBaWRhbiBNYXRyYW5nYSI6IDEyLjAsICJUeXJvbiBNY0NhcnRlciI6IDkuMCwgIlN0ZXZlbiBNZWVrcyI6IDkuMCwgIkJyZW9ubmEgTWlsbGVyIjogOS4wLCAiRW1lcmFsZCBNaXNraW1taW4iOiA5LjUsICJFbWVyYWxkIE1pc2tpbW1pbi1QQVJUWSI6IDQuMCwgIk1pa2F5bGEgTW9vcmUiOiA5LjUsICJMaWx5IE1vcmdhbiI6IDkuMCwgIkFsbGkgTXVuZ3VpYSI6IDkuNSwgIkxvZ2FuIE11cnJheSI6IDkuMCwgIkxvZ2FuIE5ldmVhdXgiOiA5LjAsICJTdGVmYW5pZSBOaW5vbWl5YSI6IDEzLjAsICJTdGVmYW5pZSBOaW5vbWl5YS1QQVJUWSI6IDQuMCwgIkNsYXVkaWEgUGFwaXMiOiA5LjUsICJDbGF1ZGlhIFBhcGlzLVBBUlRZIjogNC4wLCAiTWljaGFlbCBQYXBpcyI6IDEwLjAsICJNaWNoYWVsIFBhcGlzLVBBUlRZIjogNC4wLCAiSm9uYXRoYW4gUGVlbCI6IDIyLjQzLCAiSmVzc2llIFBvY2hlIjogMjEuMzcsICJKYXlkZW4gUHVyc2VsbCI6IDkuMCwgIk1hZGRpZSBRdWViZWRlYXV4IjogOS4wLCAiQ2hyaXMgUmljZSI6IDkuMCwgIklzYWJlbGxhIFJpY28iOiA5LjAsICJEZXZ5bmUgUmlzcG9saSI6IDE1LjAsICJEZXZ5bmUgUmlzcG9saS1QQVJUWSI6IDQuMCwgIk5ha2VueWEgUm9nZXJzIjogOS4wLCAiQWRkaXNvbiBSb21lcm8iOiA5LjAsICJSaWxleSBSdWRlc2lsbCI6IDkuMCwgIlNhbWFudGhhIFJ1ZGVzaWxsIjogMTYuNSwgIlNhbWFudGhhIFJ1ZGVzaWxsLVBBUlRZIjogNC4wLCAiQ2VjaWxpYSBTY2lvcnRpbm8iOiA5LjAsICJCcmFkZW4gU2h1bHR6IjogOS4yNSwgIkRhZWxhbiBTaW1tb25zIjogOS4wLCAiSnVlbHogU2ltbXMiOiA5Ljc1LCAiSmVzc2UgU21pdGgiOiA5LjAsICJKYWNvYiBTbmF5IjogOS41LCAiQ29sbGluIFNwYXJyb3ciOiA5LjAsICJKYXlzZSBTdW5tb25pIjogOS4wLCAiQnJhZHkgV2Fsc2giOiA5LjAsICJEYXZpZCBXZWlzcyI6IjoyNC43MCIsICJDYWRlbiBXaGl0ZSI6IDkuMCwgIkRheSdTaHluZSBXaGl0ZSI6IDkuMCwgIkpvc2ggV2hpdG1vcmUiOiA5LjUsICJKb3NoIFdoaXRtb3JlLVBBUlRZIjogNC4wfQ==";
-const employeeRoster = JSON.parse(atob(_0xdata));
+const employeeRoster = { 
+    "Avri Alt": 9.00, 
+    "Cecilia Anzora": 9.00, 
+    "Elizabeth Avery": 9.50,
+    "Elizabeth Avery-PARTY": 4.00, 
+    "Eric Bennett": 10.50, 
+    "Gavin Boudlauch": 9.00, 
+    "Destany Brindle": 9.50,
+    "Destany Brindle-PARTY": 4.00, 
+    "Thomas Burkard": 9.50, 
+    "Alexa Caceres": 9.50,
+    "Alexa Caceres-PARTY": 4.00, 
+    "Camrie Christoval": 9.00, 
+    "Deana Collins": 9.00,
+    "Jayden Cousan": 9.00, 
+    "Loghan Crandle": 9.00,
+    "Alec Cruz": 9.00,
+    "Grace Davis": 9.00, 
+    "Abigail Dupre": 9.00, 
+    "Ava Evans": 9.50, 
+    "Drew Favalora": 9.50,
+    "Drew Favalora-PARTY": 4.00, 
+    "Lily Folkerts": 9.00, 
+    "Paris Frederick": 15.00, 
+    "Julian Fredrick": 9.00, 
+    "Kaelyn Groh": 9.50,
+    "Kaelyn Groh-PARTY": 4.00, 
+    "Shea Hawkins": 11.00,
+    "Shea Hawkins-PARTY": 4.00, 
+    "Amelia Heck": 9.50, 
+    "Sophia Heck": 9.50, 
+    "Sophia Heck-PARTY": 4.00,
+    "Luke Horner": 10.50, 
+    "Luke Horner-PARTY": 4.00, 
+    "Mailee Jones": 10.50, 
+    "Mailee Jones-PARTY": 4.00,
+    "David King": 9.00, 
+    "Donald Lancaster": 9.00, 
+    "Abby Leary": 9.00, 
+    "Abby Leary-PARTY": 4.00,
+    "Jasmyn Lee": 9.50,
+    "Jasmyn Lee-PARTY": 4.00, 
+    "Ga\'Leiya Leggett": 9.00, 
+    "Cory Lepine": 15.00, 
+    "Brody Loudermilk": 9.00, 
+    "Baileigh Mahne": 10.00, 
+    "Baileigh Mahne-PARTY": 4.00,
+    "Vyolet Malacara": 9.00, 
+    "Jadyn Mataya": 10.00,
+    "Jadyn Mataya-PARTY": 4.00, 
+    "Aidan Matranga": 12.00, 
+    "Tyron McCarter": 9.00, 
+    "Steven Meeks": 9.00,
+    "Breonna Miller": 9.00, 
+    "Emerald Miskimmin": 9.50,
+    "Emerald Miskimmin-PARTY": 4.00, 
+    "Mikayla Moore": 9.50, 
+    "Lily Morgan": 9.00, 
+    "Alli Munguia": 9.50, 
+    "Logan Murray": 9.00, 
+    "Logan Neveaux": 9.00, 
+    "Stefanie Ninomiya": 13.00,
+    "Stefanie Ninomiya-PARTY": 4.00, 
+    "Claudia Papis": 9.50,
+    "Claudia Papis-PARTY": 4.00, 
+    "Michael Papis": 10.50, 
+    "Michael Papis-PARTY": 4.00,
+    "Jonathan Peel": 22.43, 
+    "Jessie Poche": 21.37, 
+    "Jayden Pursell": 9.00, 
+    "Maddie Quebedeaux": 9.00, 
+    "Chris Rice": 9.00, 
+    "Isabella Rico": 9.00, 
+    "Isaiah Richardson": 9.00,
+    "Devyne Rispoli": 15.00, 
+    "Devyne Rispoli-PARTY": 4.00,
+    "Nakenya Rogers": 9.00, 
+    "Addison Romero": 9.00, 
+    "Samantha Rudesill": 17.09, 
+    "Riley Rudesill": 9.00, 
+    "Cecilia Sciortino": 9.00, 
+    "Braden Shultz": 9.25, 
+    "Daelan Simmons": 9.00, 
+    "Juelz Simms": 9.75,
+    "Jesse Smith": 9.00, 
+    "Jacob Snay": 9.50, 
+    "Collin Sparrow": 9.00,
+    "Jayse Sunmoni": 9.00,
+    "Brady Walsh": 9.00,  
+    "Day\'Shyne White": 9.00, 
+    "Caden White": 9.00, 
+    "Josh Whitmore": 9.50, 
+    "Josh Whitmore-PARTY": 4.00
+};
 
+// MODIFIED: This loop now generates raw names without appending the wage strings
 let optionsHtml = '';
 for (const name in employeeRoster) {
     optionsHtml += '<option value="' + name + '">' + name + '</option>';
@@ -47,6 +138,7 @@ function addRow() {
     const container = document.getElementById('timecard-rows'); 
     const newRow = document.createElement('div'); 
     newRow.className = 'row'; 
+    
     newRow.innerHTML = ` 
         <select class="employee-select"> 
             ${optionsHtml} 
@@ -60,6 +152,7 @@ function calculateTotalLabor() {
     const selects = document.querySelectorAll('.employee-select'); 
     const inputs = document.querySelectorAll('.hours-input'); 
     const revenue = parseFloat(document.getElementById('revenue').value); 
+    
     let totalLaborCost = 0; 
     
     selects.forEach((select, index) => { 
@@ -71,11 +164,11 @@ function calculateTotalLabor() {
     
     if (revenue > 0) { 
         const percentage = (totalLaborCost / revenue) * 100; 
+        // MODIFIED OPTION: Hides the total dollar sum if you want absolute cost privacy
         document.getElementById('output').innerHTML = `Labor Percentage: ${percentage.toFixed(2)}%`; 
     } else { 
         document.getElementById('output').innerHTML = "Please enter a valid revenue number."; 
     } 
 } 
-</script> 
 </body> 
 </html>
